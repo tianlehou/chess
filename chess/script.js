@@ -1,4 +1,4 @@
-import { database } from './firebase-config.js';
+import { database } from '../environment/firebase-config.js';
 
 const db = database;
 
