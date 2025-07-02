@@ -5,85 +5,52 @@ const db = database;
 // Configuración corregida de Stockfish
 const stockfish = new Worker('./stockfish-worker.js');
 
-$(document).ready(function () {
-    // Inicialización correcta de Chess
-    const game = new Chess();
+$(document).ready(function() {
+    // Configuración inicial
+    const board = $('.chess-board');
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     
-    const board = Chessboard('board', {
-        position: 'start',
-        draggable: true,
-        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-        onDrop: handleMove
-    });
-
-    let engineReady = false;
-
-    stockfish.onmessage = function (event) {
-        if (event.data === 'uciok') {
-            engineReady = true;
-            stockfish.postMessage('setoption name Skill Level value 10');
-        } else if (event.data.startsWith('bestmove')) {
-            const move = event.data.split(' ')[1];
-            game.move(move);
-            board.position(game.fen());
-            updateStatus();
-        }
+    // Símbolos Unicode para las piezas
+    const pieces = {
+        'r': '', 'n': '', 'b': '', 'q': '', 'k': '', 'p': '',
+        'R': '', 'N': '', 'B': '', 'Q': '', 'K': '', 'P': ''
     };
-
-    function updateStatus() {
-        $('#status').text(
-            `Turno: ${game.turn() === 'w' ? 'Blancas' : 'Negras'} | ` +
-            `Estado: ${getGameStatus()}`
-        );
+    
+    // Posición inicial (FEN)
+    const initialPosition = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+    
+    // Generar tablero con piezas
+    let row = 8;
+    for (const line of initialPosition.split('/')) {
+        let col = 0;
+        for (const char of line) {
+            if (isNaN(char)) {
+                // Es una pieza
+                const isWhite = char === char.toUpperCase();
+                const square = $(`<div class="square ${(row + col) % 2 === 0 ? 'white' : 'black'}" 
+                                  data-row="${row}" data-col="${files[col]}">
+                                  <span class="piece ${isWhite ? 'white-piece' : 'black-piece'}">
+                                    ${pieces[char]}
+                                  </span>
+                                </div>`);
+                board.append(square);
+                col++;
+            } else {
+                // Es un número (espacios vacíos)
+                col += parseInt(char);
+            }
+        }
+        row--;
     }
-
-    function getGameStatus() {
-        if (game.in_checkmate()) return 'Jaque mate';
-        if (game.in_draw()) return 'Tablas';
-        if (game.in_check()) return 'Jaque';
-        return 'En juego';
-    }
-
-    function handleMove(source, target) {
-        const move = game.move({
-            from: source,
-            to: target,
-            promotion: 'q'
-        });
-
-        if (move === null) return 'snapback';
-
-        updateStatus();
-
-        // La IA hace su movimiento después de un breve retraso
-        setTimeout(makeAIMove, 500);
-    }
-
-    function makeAIMove() {
-        if (!engineReady) return;
-
-        stockfish.postMessage(`position fen ${game.fen()}`);
-        stockfish.postMessage('go depth 10');
-    }
-
-    stockfish.postMessage('uci');
-
-    updateStatus();
+    
+    // Estado inicial del juego
+    $('#status').text('Juego listo - Blancas comienzan');
 });
 
 // Firebase functions
 function saveGame() {
     const gameData = {
-        fen: game.fen(),
-        moves: game.history(),
         date: new Date().toISOString()
     };
     db.ref('games').push(gameData);
-}
-
-// Llamar saveGame() cuando termine la partida
-function getGameStatus() {
-    if (game.in_checkmate() || game.in_draw()) {
-        saveGame();
-    }
 }
