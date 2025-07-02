@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
           // https://tianlehou.github.io/tianshop/login
           const baseUrl = window.location.origin.includes("github.io") ? "/tianshop" : "";
 
-          window.location.href = `${baseUrl}/src/users/dev/pages/home.html`;
-        }, 1500);
+          window.location.href = `${baseUrl}/chess/index.html`;
+        }, 500);
 
       } catch (error) {
         // Manejo de errores

@@ -1,9 +1,11 @@
-Crear un nuevo proyecto con Javascript y HTML
-Firebase y quizas con python
-- para detectar cambios o movimientos en la pantalla
-- por ejemplo en un juego de tablero.
-- detectar que piezas movio el oponente y asi hacer la siguiente jugada en automatico
-- la idea es hacer una aplicacion que juegue por si sola, por ejemplo ajedrez.
-- que vaya entrenandose sola y entre mas juegue, mejores jugadas o movimientos haga.
+tengo este mensaje de error:
+- login_Google.js:46 Error durante el inicio de sesión: PERMISSION_DENIED PERMISSION_DENIED: Permission denied.
 
-que me recomiendan para hacer esto?
+Tengo esta regla es database:
+
+{
+  "rules": {
+    ".read": "now < 1711339200000",  // 2024-3-26
+    ".write": "now < 1711339200000",  // 2024-3-26
+  }
+}
