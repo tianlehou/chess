@@ -44,9 +44,6 @@ async function handleGoogleLogin() {
         const errorMessage = error.message;
 
         console.error("Error durante el inicio de sesión:", errorCode, errorMessage);
-
-        // Muestra un mensaje de error al usuario
-        showToast(`Error durante el inicio de sesión: ${errorMessage}`);
     }
 }
 
